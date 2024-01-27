@@ -1,0 +1,61 @@
+---
+title: "Sonar Data in R"
+output: html_document
+date: "2023-12-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, warning=FALSE}
+library(rpart)
+library(ggplot2)
+library(rpart.plot)
+```
+
+
+```{r}
+# Note that M means "mine" and R means "rock" and we will use the surrounding values to predict a mine or rock.
+
+sonar.data <- read.csv("C:/Users/super/Desktop/Coding Projects/Data Sets/sonar data.csv", header=FALSE)
+
+# Clean data
+V61 <- as.factor(sonar.data$V61)
+```
+
+
+```{r}
+ggplot(sonar.data, aes(x = V61)) +
+  geom_bar(color = "black")
+```
+
+
+```{r}
+table(sonar.data$V61)
+```
+
+```{r}
+(treeOne <- rpart(V61 ~., data = sonar.data))
+```
+
+```{r}
+set.seed(123)
+rpart.plot(treeOne)
+```
+
+```{r}
+pred_labels <- predict(treeOne, sonar.data, type = "class")
+pred_labels[1:10]
+```
+
+```{r}
+(my_table <- table(our_predictions = pred_labels, reality = V61))
+```
+
+
+```{r}
+accuracy <- sum(diag(my_table)/sum(my_table))
+print(accuracy)
+```
